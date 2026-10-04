@@ -15,6 +15,7 @@
  * Environment variables on Render:
  *   ANTHROPIC_API_KEY   (already set)
  *   MAKE_WEBHOOK_URL    the NEW Make webhook (after rotating the old one)
+ *   MAKE_API_KEY        the API key set on that webhook in Make (sent as x-make-apikey)
  *   ALLOWED_ORIGINS     optional, comma-separated; defaults to the list below
  *   DAILY_AI_LIMIT      optional, max AI calls per day for everyone together (default 300)
  */
@@ -137,7 +138,10 @@ app.post("/lead", leadLimit, async (req, res) => {
   }
 
   try {
-    await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(lead) });
+    const headers = { "Content-Type": "application/json" };
+    if (process.env.MAKE_API_KEY) headers["x-make-apikey"] = process.env.MAKE_API_KEY;
+    const r = await fetch(url, { method: "POST", headers, body: JSON.stringify(lead) });
+    if (!r.ok) return res.status(502).json({ error: "forward_failed" });
     res.json({ ok: true });
   } catch {
     res.status(502).json({ error: "forward_failed" });
