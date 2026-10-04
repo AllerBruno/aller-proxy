@@ -141,7 +141,11 @@ app.post("/lead", leadLimit, async (req, res) => {
     const headers = { "Content-Type": "application/json" };
     if (process.env.MAKE_API_KEY) headers["x-make-apikey"] = process.env.MAKE_API_KEY;
     const r = await fetch(url, { method: "POST", headers, body: JSON.stringify(lead) });
-    if (!r.ok) return res.status(502).json({ error: "forward_failed" });
+    if (!r.ok) {
+      // Visible in Render → Logs. Never logs the URL or the key, only Make's answer.
+      console.error("Make rejected the lead:", r.status, (await r.text()).slice(0, 200));
+      return res.status(502).json({ error: "forward_failed", status: r.status });
+    }
     res.json({ ok: true });
   } catch {
     res.status(502).json({ error: "forward_failed" });
