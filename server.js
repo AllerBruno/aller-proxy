@@ -116,7 +116,7 @@ app.post("/chat", chatLimit, async (req, res) => {
 
 /* ── /lead: forwards the brief to Make ────────────────────── */
 const LEAD_FIELDS = [
-  "name", "location", "project", "services", "branding", "product", "competitors", "budgetText",
+  "name", "location", "region", "project", "services", "size", "branding", "product", "competitors", "budgetText",
   "timeline", "email", "vertical", "match", "estimate", "lang", "source", "ts", "transcript",
 ];
 
